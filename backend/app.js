@@ -31,9 +31,10 @@ app.use(cors());
   }));
   
   app.get("/", (req, res) => {
+    console.log('Received GET request to /');
     res.send("Hello World!");
   });
-
+  
   app.post("/",async(req,res)=>{
       const{email}=req.body
       try{
