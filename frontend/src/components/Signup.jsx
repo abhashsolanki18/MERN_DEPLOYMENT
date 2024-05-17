@@ -17,7 +17,7 @@ function Signup() {
 
     try {
       await axios
-        .post("http://localhost:8000/signup", {
+        .post("https://mern-deployment-backend.vercel.app/signup", {
           email,
           name,
           password,
