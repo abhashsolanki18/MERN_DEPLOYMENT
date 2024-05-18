@@ -19,7 +19,7 @@ function Login() {
         .post("https://mern-deployment-backend.vercel.app/", {
           email,
           password,
-        })
+        }, Headers: Access-Control-Allow-Origin )
         .then((res) => {
           if (res.data === "exist") {
             history("/upload", { state: { id: email } });
