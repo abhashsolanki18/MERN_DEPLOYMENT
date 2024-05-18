@@ -7,73 +7,67 @@ import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import axios from 'axios';
 import collection from './mongo.js';
+
 dotenv.config();
 const app = express();
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(cors());
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  next();
+// Use the cors middleware
+app.use(cors({
+  origin: 'https://mern-deployment-frontend-mu.vercel.app/', // Replace with your frontend's origin
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
+app.get("/", (req, res) => {
+  console.log('Received GET request to /');
+  res.send("Hello World!");
 });
-  
-  app.get("/", (req, res) => {
-    console.log('Received GET request to /');
-    res.send("Hello World!");
-  });
-  
-  app.post("/",async(req,res)=>{
-    const{email}=req.body
-    try{
-        const check=await collection.findOne({email:email})
-        if(check){
-            res.json("exist")
-        }
-        else{
-            res.json("notexist")
-        }   
-    }
-    catch(e){
-        res.json("fail")
-    }
-})
-app.post("/signup",async(req,res)=>{
-    const{email,name,password}=req.body
-    const data={
-        email:email,
-        name:name,
-        password:password
-    }
-    try{
-        const check=await collection.findOne({email:email})
-        if(check){
-            res.json("exist")
-        }
-        else{
-            res.json("notexist")
-            await collection.insertMany([data])
-        }
-    }
-    catch(e){
-        res.json("fail")
-    }
 
-})
+app.post("/", async (req, res) => {
+  const { email } = req.body;
+  try {
+    const check = await collection.findOne({ email: email });
+    if (check) {
+      res.json("exist");
+    } else {
+      res.json("notexist");
+    }
+  } catch (e) {
+    res.json("fail");
+  }
+});
 
-
+app.post("/signup", async (req, res) => {
+  const { email, name, password } = req.body;
+  const data = {
+    email: email,
+    name: name,
+    password: password
+  };
+  try {
+    const check = await collection.findOne({ email: email });
+    if (check) {
+      res.json("exist");
+    } else {
+      await collection.insertMany([data]);
+      res.json("notexist");
+    }
+  } catch (e) {
+    res.json("fail");
+  }
+});
 
 const imageViewCounts = {};
 
-
-
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, './public/temp');
+    cb(null, path.join(__dirname, './public/temp'));
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now();
@@ -81,6 +75,7 @@ const storage = multer.diskStorage({
   },
 });
 const upload = multer({ storage: storage });
+
 app.post('/upload', upload.single('image'), async (req, res) => {
   const { title, description } = req.body;
   const localFilePath = req.file.path;
@@ -97,22 +92,18 @@ app.get('/images', async (req, res) => {
     const cloudName = 'abhashsolanki'; // Your Cloudinary cloud name
     const folder = 'images'; // Your folder name where images are stored
 
-    const response = await axios.get(
-      `https://api.cloudinary.com/v1_1/${cloudName}/resources/search`,
-      {
-        params: {
-          expression: `folder:${folder}`, // Filter by folder
-          type: 'upload', // Filter by resource type (uploads)
-          expression: `folder:${folder}`,
-          type: 'upload', 
-        },
-        headers: {
-          Authorization: `Basic ${Buffer.from(
-            process.env.CLOUDINARY_API_KEY + ':' + process.env.CLOUDINARY_API_SECRET
-          ).toString('base64')}`,
-        },
-      }
-    );
+    const response = await axios.get(`https://api.cloudinary.com/v1_1/${cloudName}/resources/search`, {
+      params: {
+        expression: `folder:${folder}`, // Filter by folder
+        type: 'upload', // Filter by resource type (uploads)
+      },
+      headers: {
+        Authorization: `Basic ${Buffer.from(
+          process.env.CLOUDINARY_API_KEY + ':' + process.env.CLOUDINARY_API_SECRET
+        ).toString('base64')}`,
+      },
+    });
+
     if (response.data && response.data.resources) {
       // Increment view count for each image
       const imagesWithViews = response.data.resources.map((image) => {
@@ -134,6 +125,7 @@ app.get('/images', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
