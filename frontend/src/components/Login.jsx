@@ -19,7 +19,7 @@ function Login() {
         email,
         password,
       });
-    
+
       if (res.data === "exist") {
         history("/upload", { state: { id: email } });
       } else if (res.data === "notexist") {
@@ -32,7 +32,8 @@ function Login() {
       setIsPopupOpen(true);
       console.log(e);
     }
-    
+  }
+
   const handleClosePopup = () => {
     setIsPopupOpen(false);
     if (redirectToSignup) {
