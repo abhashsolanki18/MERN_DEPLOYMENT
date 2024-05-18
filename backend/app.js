@@ -26,21 +26,7 @@ app.use(cors());
     res.send("Hello World!");
   });
   
-  app.post("/",async(req,res)=>{
-      const{email}=req.body
-      try{
-          const check=await collection.findOne({email:email})
-          if(check){
-              res.json("exist")
-          }
-          else{
-              res.json("notexist")
-          }   
-      }
-      catch(e){
-          res.json("fail")
-      }
-  })
+  
 app.post("/signup",async(req,res)=>{
     const{email,name,password}=req.body
     const data={
