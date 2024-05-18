@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Use the cors middleware
 app.use(cors({
-  origin: 'https://mern-deployment-frontend-mu.vercel.app/', // Replace with your frontend's origin
+  origin: 'https://mern-deployment-frontend-mu.vercel.app', // Replace with your frontend's origin
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
