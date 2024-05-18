@@ -65,11 +65,11 @@ app.post("/signup",async(req,res)=>{
 
 })
 
-// In-memory object to store image view counts
+
 
 const imageViewCounts = {};
 
-// Multer configuration for file upload
+
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
