@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(cors({
-  origin: 'https://mern-deployment-front-end.vercel.app', 
+  origin: ['https://mern-deployment-front-end.vercel.app','https://mern-deployment-front-end.vercel.app/signup'], 
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
