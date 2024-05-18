@@ -21,22 +21,25 @@ const Upload = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append("image", image);
-    formData.append("title", title);
-    formData.append("description", description);
-
     setIsLoading(true);
 
     try {
-      const result = await axios.post(
+      const formData = new FormData();
+      formData.append("image", image);
+      formData.append("title", title);
+      formData.append("description", description);
+
+      const response = await axios.post(
         "https://mern-deployment-backend.vercel.app/upload",
         formData,
         {
-          headers: { "Content-Type": "multipart/form-data" },
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         }
       );
-      console.log(result.data);
+
+      console.log(response.data);
       setShowPopup(true);
 
       setImage(null);
@@ -56,7 +59,7 @@ const Upload = () => {
   };
 
   const handleDisplayImages = () => {
-    history("/display"); 
+    history("/display");
   };
 
   return (
