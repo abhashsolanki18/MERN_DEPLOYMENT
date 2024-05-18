@@ -65,31 +65,31 @@ app.post("/signup", async (req, res) => {
 
 const imageViewCounts = {};
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, './public/temp'));
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now();
-    cb(null, uniqueSuffix + file.originalname);
-  },
-});
+// Configure multer storage with in-memory storage
+const storage = multer.memoryStorage();
+
 const upload = multer({ storage: storage });
 
 app.post('/upload', upload.single('image'), async (req, res) => {
   const { title, description } = req.body;
-  const localFilePath = req.file.path;
   try {
-    const imageUrl = await uploadOnCloud(localFilePath, title, description);
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
+
+    const fileBuffer = req.file.buffer;
+    const imageUrl = await uploadOnCloud(fileBuffer, title, description);
+
     res.status(200).json({ message: 'File uploaded successfully', url: imageUrl });
   } catch (error) {
+    console.error('Error uploading image:', error);
     res.status(500).json({ message: 'File upload failed', error: error.message });
   }
 });
 
 app.get('/images', async (req, res) => {
   try {
-    const cloudName = 'abhashsolanki'; // Your Cloudinary cloud name
+    const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
     const folder = 'images'; // Your folder name where images are stored
 
     const response = await axios.get(`https://api.cloudinary.com/v1_1/${cloudName}/resources/search`, {

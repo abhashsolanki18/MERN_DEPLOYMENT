@@ -1,5 +1,4 @@
 import { v2 as cloudinary } from 'cloudinary';
-import fs from 'fs';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -9,13 +8,11 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-
-const uploadOnCloud = async (localFilePath, title, description) => {
+const uploadOnCloud = async (fileBuffer, title, description) => {
   try {
-    if (!localFilePath) return null;
-    const result = await cloudinary.uploader.upload(localFilePath, {
-      resource_type: 'image',
-      folder: 'images', 
+    const result = await cloudinary.uploader.upload(fileBuffer, {
+      resource_type: 'auto',
+      folder: 'images', // Change this to your desired folder
       public_id: title,
       tags: 'display',
       context: {
@@ -24,15 +21,11 @@ const uploadOnCloud = async (localFilePath, title, description) => {
       },
     });
     console.log('File uploaded', result.url);
-    fs.unlinkSync(localFilePath);
     return result.url;
   } catch (error) {
-    fs.unlinkSync(localFilePath);
-    console.error(error);
+    console.error('Error uploading file to Cloudinary:', error);
     throw error;
   }
 };
 
 export { uploadOnCloud };
-
-
