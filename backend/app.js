@@ -13,13 +13,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
-  app.get("/",cors(),(req,res)=>{
-  })
-  const allowedOrigins = ['https://mern-deployment-front-end.vercel.app'];
-  app.use(cors({
-    origin: 'https://mern-deployment-front-end.vercel.app'
-    }));
+
+app.use(cors({
+  origin: 'https://mern-deployment-front-end.vercel.app', 
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
   
   app.get("/", (req, res) => {
     console.log('Received GET request to /');
